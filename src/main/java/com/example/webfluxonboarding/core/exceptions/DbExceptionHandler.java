@@ -1,4 +1,4 @@
-package com.eurisko.onboardingexercise.project.module.core.exceptions;
+package com.example.webfluxonboarding.core.exceptions;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.util.Date;
 
-@ControllerAdvice
 public class DbExceptionHandler {
     @ExceptionHandler(value = {DbException.class})
     public ResponseEntity<Object> handleDbException(DbException ex){

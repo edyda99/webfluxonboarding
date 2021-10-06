@@ -1,4 +1,4 @@
-package com.eurisko.onboardingexercise.project.module.core.exceptions;
+package com.example.webfluxonboarding.core.exceptions;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

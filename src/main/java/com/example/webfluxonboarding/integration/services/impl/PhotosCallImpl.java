@@ -1,10 +1,9 @@
 package com.example.webfluxonboarding.integration.services.impl;
 
-import com.eurisko.onboardingexercise.project.module.core.exceptions.DbException;
+import com.example.webfluxonboarding.core.exceptions.DbException;
 import com.example.webfluxonboarding.integration.entities.Album;
 import com.example.webfluxonboarding.integration.entities.Photo;
 import com.example.webfluxonboarding.integration.entities.User;
-import com.example.webfluxonboarding.integration.model.response.AlbumResponse;
 import com.example.webfluxonboarding.integration.model.response.PhotoResponse;
 import com.example.webfluxonboarding.integration.repo.AlbumRepo;
 import com.example.webfluxonboarding.integration.repo.PhotoRepo;
@@ -64,9 +63,7 @@ public class PhotosCallImpl implements PhotosCall {
                         .setUrl(p.getUrl()))
                 .doOnNext(photoRepo::save)
                 .map(p->linkPhotoToAlbum(p,album,user))
-                .doOnComplete(new Thread(()->{
-                    albumRepo.save(album);
-                }))
+                .doOnComplete(new Thread(()-> albumRepo.save(album)))
                 .reduce(this::linkPhotoToAlbum)
                 .log("Photo imported successfully");
     }

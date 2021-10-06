@@ -1,9 +1,9 @@
 package com.example.webfluxonboarding.core.handler;
 
-import com.eurisko.onboardingexercise.project.module.core.exceptions.DbException;
 import com.example.webfluxonboarding.core.dto.request.AlbumRequestDto;
 import com.example.webfluxonboarding.core.dto.request.PhotoRequestDto;
 import com.example.webfluxonboarding.core.dto.response.*;
+import com.example.webfluxonboarding.core.exceptions.DbException;
 import com.example.webfluxonboarding.integration.entities.Album;
 import com.example.webfluxonboarding.integration.entities.Photo;
 import com.example.webfluxonboarding.integration.entities.User;
@@ -25,7 +25,7 @@ import java.util.Optional;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.web.reactive.function.BodyExtractors.toMono;
 import static org.springframework.web.reactive.function.BodyInserters.fromValue;
-import static org.springframework.web.reactive.function.server.ServerResponse.notFound;
+import static org.springframework.web.reactive.function.server.ServerResponse.badRequest;
 
 @Component
 @RequiredArgsConstructor
@@ -40,7 +40,7 @@ public class UsersHandler {
 
     public Mono<ServerResponse> getPhoto(ServerRequest serverRequest) {
         Optional<String> id = serverRequest.queryParam("id");
-        if (id.isEmpty()) return notFound().build();
+        if (id.isEmpty()) return badRequest().build();
         Mono<Photo> response;
         Optional<Photo> photo = photoRepo.findById(id.get());
         response = photo.map(Mono::just).orElseGet(() -> photosCall.getPhotos(id.get()));
@@ -50,12 +50,15 @@ public class UsersHandler {
 
         return response.flatMap(p->ServerResponse.ok()
                 .contentType(APPLICATION_JSON)
-                .body(fromValue(p)));
+                .body(fromValue(p)))
+                .onErrorResume(e->Mono.just("Error" + e)
+                        .flatMap(p-> ServerResponse.ok()
+                                .contentType(APPLICATION_JSON)
+                                .bodyValue(p)));
     }
-
     public Mono<ServerResponse> getAlbum(ServerRequest serverRequest) {
         Optional<String> id = serverRequest.queryParam("id");
-        if (id.isEmpty()) return notFound().build();
+        if (id.isEmpty()) return badRequest().build();
 
         Mono<Album> response;
         Optional<Album> album = albumRepo.findById(id.get());
@@ -65,21 +68,30 @@ public class UsersHandler {
 
         return response.flatMap(p->ServerResponse.ok()
                 .contentType(APPLICATION_JSON)
-                .body(fromValue(p)));
+                .body(fromValue(p)))
+                .onErrorResume(e->Mono.just("Error" + e)
+                        .flatMap(p-> ServerResponse.ok()
+                                .contentType(APPLICATION_JSON)
+                                .bodyValue(p)));
     }
 
     public Mono<ServerResponse> getUser(ServerRequest serverRequest) {
         Optional<String> id = serverRequest.queryParam("id");
-        if (id.isEmpty()) return notFound().build();
+        if (id.isEmpty()) return badRequest().build();
         Mono<User> response;
         Optional<User> user = userRepo.findById(id.get());
         response = user.map(Mono::just).orElseGet(()-> usersCall.getUser(id.get()));
 
         response.map(this::getUserResponseDto);
 
-        return response.flatMap(p->ServerResponse.ok()
+        return response
+                .flatMap(p->ServerResponse.ok()
                 .contentType(APPLICATION_JSON)
-                .body(fromValue(p)));
+                .body(fromValue(p)))
+                .onErrorResume(e->Mono.just("Error" + e)
+                .flatMap(p-> ServerResponse.ok()
+                        .contentType(APPLICATION_JSON)
+                        .bodyValue(p)));
     }
 
     public Mono<ServerResponse> createOrUpdateAlbum(ServerRequest serverRequest){
@@ -89,7 +101,11 @@ public class UsersHandler {
                     .doOnNext(albumRepo::save);
             return response.flatMap(p->ServerResponse.ok()
                     .contentType(APPLICATION_JSON)
-                    .body(fromValue("Success")));
+                    .body(fromValue("Success")))
+                    .onErrorResume(e->Mono.just("Error" + e)
+                    .flatMap(p-> ServerResponse.ok()
+                            .contentType(APPLICATION_JSON)
+                            .bodyValue(p)));
         }catch (Exception ex){
             throw new DbException(ex.getMessage());
         }
@@ -102,7 +118,11 @@ public class UsersHandler {
                     .doOnNext(photoRepo::save);
             return response.flatMap(p->ServerResponse.ok()
                     .contentType(APPLICATION_JSON)
-                    .body(fromValue("Success")));
+                    .body(fromValue("Success")))
+                    .onErrorResume(e->Mono.just("Error" + e)
+                            .flatMap(p-> ServerResponse.ok()
+                                    .contentType(APPLICATION_JSON)
+                                    .bodyValue(p)));
         }catch (Exception ex){
             throw new DbException(ex.getMessage());
         }
@@ -113,7 +133,11 @@ public class UsersHandler {
             id.ifPresentOrElse(albumRepo::deleteById, ServerResponse::badRequest);
             return ServerResponse.ok()
                     .contentType(APPLICATION_JSON)
-                    .body(fromValue("Success"));
+                    .body(fromValue("Success"))
+                    .onErrorResume(e->Mono.just("Error" + e)
+                            .flatMap(p-> ServerResponse.ok()
+                                    .contentType(APPLICATION_JSON)
+                                    .bodyValue(p)));
         }catch (Exception ex){
             throw new DbException(ex.getMessage());
         }
@@ -125,7 +149,11 @@ public class UsersHandler {
             id.ifPresentOrElse(photoRepo::deleteById,ServerResponse::badRequest);
             return ServerResponse.ok()
                     .contentType(APPLICATION_JSON)
-                    .body(fromValue("Success"));
+                    .body(fromValue("Success"))
+                    .onErrorResume(e->Mono.just("Error" + e)
+                            .flatMap(p-> ServerResponse.ok()
+                                    .contentType(APPLICATION_JSON)
+                                    .bodyValue(p)));
         }catch (Exception ex){
             throw new DbException(ex.getMessage());
         }

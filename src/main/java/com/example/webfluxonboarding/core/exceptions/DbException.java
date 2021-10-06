@@ -1,4 +1,4 @@
-package com.eurisko.onboardingexercise.project.module.core.exceptions;
+package com.example.webfluxonboarding.core.exceptions;
 
 public class DbException extends RuntimeException{
     public DbException(){

@@ -1,21 +1,18 @@
 package com.example.webfluxonboarding.integration.services.impl;
 
 
-import com.eurisko.onboardingexercise.project.module.core.exceptions.DbException;
+import com.example.webfluxonboarding.core.exceptions.DbException;
 import com.example.webfluxonboarding.integration.entities.Album;
 import com.example.webfluxonboarding.integration.entities.User;
 import com.example.webfluxonboarding.integration.model.response.AlbumResponse;
 import com.example.webfluxonboarding.integration.repo.AlbumRepo;
-import com.example.webfluxonboarding.integration.repo.PhotoRepo;
 import com.example.webfluxonboarding.integration.repo.UserRepo;
 import com.example.webfluxonboarding.integration.services.AlbumsCall;
 import com.example.webfluxonboarding.integration.services.PhotosCall;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.reactivestreams.Publisher;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Date;
